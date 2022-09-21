@@ -1,6 +1,8 @@
 /*CSS variables*/
 :root {
     --headerBackground: #93a2f7;
+    --buttonColor: #3551ee;
+    --buttonText: #ffff;
 }
 
 /*Universal Selector*/
@@ -29,17 +31,25 @@ main {
     min-height: 100vh;
 }
 
-/*Class Selectors*/
-.high-scores {
-    text-decoration: underline;
+p {
+    width: 40vw;
 }
 
-
+/*Class Selectors*/
 .container {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+}
+
+.high-scores {
+    text-decoration: underline;
+}
+
+.user-button {
+    background-color: var(--buttonColor);
+    color: var(--buttonText);
 }
 
 /*Identifiers*/
@@ -53,4 +63,36 @@ main {
 
 #highscores {
     display: none;
+}
+/*Identifiers used to switch containers*/
+#hide {
+    display: none;
+}
+
+#show {
+    display: flex;
+}
+
+/* Pseudo Classes */
+/* The user's cursor is positioned over the element */
+button:hover {
+    opacity: 0.7;
+    cursor: pointer;
+}
+  
+/* The user is actively pressing down on the element */
+button:active {
+    background-color: var(--buttonText);
+    color: var(--buttonColor);
+}
+  
+/* The element is currently in focus, either by tabbing to or clicking on it */
+button:focus {
+    border-color: var(--headerBackground);
+}
+
+nav:hover, nav:active, nav:focus {
+    opacity: 0.7;
+    cursor: pointer;
+    text-decoration: none;
 }
