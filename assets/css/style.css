@@ -74,11 +74,6 @@ button:active {
     background-color: var(--buttonText);
     color: var(--buttonColor);
 }
-  
-/* The element is currently in focus, either by tabbing to or clicking on it */
-button:focus {
-    border-color: var(--headerBackground);
-}
 
 nav:hover, nav:active, nav:focus {
     opacity: 0.7;
