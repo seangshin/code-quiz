@@ -28,7 +28,7 @@ main {
     display: flex;
     align-items: center;
     justify-content: center;
-    min-height: 100vh;
+    min-height: 80vh;
 }
 
 p {
@@ -50,27 +50,16 @@ p {
 .user-button {
     background-color: var(--buttonColor);
     color: var(--buttonText);
+    margin: .25rem;
 }
 
 /*Identifiers*/
-#quiz {
-    display: none;
-}
-
-#game-over {
-    display: none;
-}
-
-#highscores {
-    display: none;
-}
-/*Identifiers used to switch containers*/
-#hide {
-    display: none;
-}
-
-#show {
+#answers {
     display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    min-height: 30vh;
 }
 
 /* Pseudo Classes */
