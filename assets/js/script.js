@@ -8,7 +8,7 @@ var answersEl = $("#answers");
 var paragraphEl = $(".paragraph");
 var containerEl = $(".container");
 var resultEl = $("#result");
-var formEl = $("#form");
+var formEl = $("#submit-form");
 
 //Global variables
 var questionIndex = 0;
@@ -54,10 +54,10 @@ function startQuiz() {
     paragraphEl.hide(); //uses jQuery to hide start section
     buttonStart.hide();
     setTime();//begins timer
-    renderQuiz();//shows next questions in quiz
+    renderQuiz();//dynamically renders quiz container and shows first question
 
 }
-//function to render dynamic button elements
+//function to render quiz container and dynamic button elements
 function renderQuiz() {
     containerEl.css("align-items", "flex-start");//change css style
     headingEl.text(questions[questionIndex]);
@@ -76,7 +76,7 @@ function nextQuestion(currentArray) {
     headingEl.text(questions[questionIndex]);//refreshes question text
     //for loop used to display answer buttons
     for (var i=0; i<currentArray.length; i++) {
-        var answerEl = $("[a-button=" + i + "]")
+        var answerEl = $("[a-button=" + i + "]")//access element by attribute 
         answerEl.text(currentArray[i]);//add text to element
     }
 }
@@ -86,9 +86,28 @@ function gameOver() {
     headingEl.text("All done!");
     paragraphEl.show();
     paragraphEl.text("Your final score is: " + secondsLeft);
-    //add form element here, refer to Third party API 05-Form-Elements
     answersEl.hide();
     resultEl.hide();
+
+    //create and append form and submit button
+    var myForm = $("<input>");
+    var myBtn = $("<button>");
+    myForm.addClass("form-input");
+    myForm.attr("type='text'");
+    myForm.attr("name='Initials'");
+    myForm.attr("placeholder='Type here'");
+    formEl.text("Enter Initials: ");
+    formEl.append(myForm);
+    myBtn.addClass("user-button");
+    myBtn.text("Submit");
+    formEl.append(myBtn);
+}
+
+function handleSubmitForm(event) {
+    event.preventDefault();
+    window.alert("Submitted!");
+    
+    //use local storage to save high scores
 }
 
 //Event listeners
@@ -140,3 +159,5 @@ answersEl.on("click", ".user-button", function (event) { //listens for answer bu
         nextQuestion(answers[questionIndex]);
     }
 });
+
+formEl.on("submit", handleSubmitForm);
