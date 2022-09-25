@@ -8,7 +8,7 @@ var answersEl = $("#answers");
 var paragraphEl = $(".paragraph");
 var containerEl = $(".container");
 var resultEl = $("#result");
-var formEl = $("#form");
+var formEl = $("#submit-form");
 
 //Global variables
 var questionIndex = 0;
@@ -17,16 +17,16 @@ var secondsLeft = 75;
 //Hard coded Q&A
 var questions = [
     "Question 1: What language is used to style a webpage?",
-    "Question 2: What is my name?",
-    "Question 3: Insert question 3",
-    "Question 4: Insert question 4",
-    "Question 5: Insert question 5",
+    "Question 2: What primitive data type is used to describe true or false?",
+    "Question 3: What object is used to store a collection of multiple items under a single variable name?",
+    "Question 4: What operator is used for not equal value or type?",
+    "Question 5: What keyword refers to an object?",
 ];
 var answers = [["HTML","CSS","Javascript","jQuery"],
-                ["Sean","Bob","Steve","Jim"],
-                ["Sean","Bob","Steve","Jim"],
-                ["Sean","Bob","Steve","Jim"],
-                ["Sean","Bob","Steve","Jim"]];
+                ["Number","String","Boolean","Null"],
+                ["Array","Function","Events","Numbers"],
+                ["!=","===","?","!=="],
+                ["class","break","this","var"]];
 
 
 /*Functions*/
@@ -54,10 +54,10 @@ function startQuiz() {
     paragraphEl.hide(); //uses jQuery to hide start section
     buttonStart.hide();
     setTime();//begins timer
-    renderQuiz();//shows next questions in quiz
+    renderQuiz();//dynamically renders quiz container and shows first question
 
 }
-//function to render dynamic button elements
+//function to render quiz container and dynamic button elements
 function renderQuiz() {
     containerEl.css("align-items", "flex-start");//change css style
     headingEl.text(questions[questionIndex]);
@@ -76,7 +76,7 @@ function nextQuestion(currentArray) {
     headingEl.text(questions[questionIndex]);//refreshes question text
     //for loop used to display answer buttons
     for (var i=0; i<currentArray.length; i++) {
-        var answerEl = $("[a-button=" + i + "]")
+        var answerEl = $("[a-button=" + i + "]")//access element by attribute 
         answerEl.text(currentArray[i]);//add text to element
     }
 }
@@ -86,9 +86,28 @@ function gameOver() {
     headingEl.text("All done!");
     paragraphEl.show();
     paragraphEl.text("Your final score is: " + secondsLeft);
-    //add form element here, refer to Third party API 05-Form-Elements
     answersEl.hide();
     resultEl.hide();
+
+    //create and append form and submit button
+    var myForm = $("<input>");
+    var myBtn = $("<button>");
+    myForm.addClass("form-input");
+    myForm.attr("type='text'");
+    myForm.attr("name='Initials'");
+    myForm.attr("placeholder='Type here'");
+    formEl.text("Enter Initials: ");
+    formEl.append(myForm);
+    myBtn.addClass("user-button");
+    myBtn.text("Submit");
+    formEl.append(myBtn);
+}
+
+function handleSubmitForm(event) {
+    event.preventDefault();
+    window.alert("Submitted!");
+    
+    //use local storage to save high scores
 }
 
 //Event listeners
@@ -104,7 +123,7 @@ answersEl.on("click", ".user-button", function (event) { //listens for answer bu
         }
     }
     if(questionIndex===1) {
-        if($(event.target).attr("a-button")==0) {
+        if($(event.target).attr("a-button")==2) {
             resultEl.text("Correct!");
         } else {
             secondsLeft=secondsLeft-15;
@@ -120,7 +139,7 @@ answersEl.on("click", ".user-button", function (event) { //listens for answer bu
         }
     }
     if(questionIndex===3) {
-        if($(event.target).attr("a-button")==0) {
+        if($(event.target).attr("a-button")==3) {
             resultEl.text("Correct!");
         } else {
             secondsLeft=secondsLeft-15;
@@ -128,7 +147,7 @@ answersEl.on("click", ".user-button", function (event) { //listens for answer bu
         }
     }
     if(questionIndex===4) {
-        if($(event.target).attr("a-button")==0) {
+        if($(event.target).attr("a-button")==2) {
             resultEl.text("Correct!");
         } else {
             secondsLeft=secondsLeft-15;
@@ -140,3 +159,5 @@ answersEl.on("click", ".user-button", function (event) { //listens for answer bu
         nextQuestion(answers[questionIndex]);
     }
 });
+
+formEl.on("submit", handleSubmitForm);
