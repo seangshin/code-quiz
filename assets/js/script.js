@@ -9,6 +9,15 @@ var paragraphEl = $(".paragraph");
 var containerEl = $(".container");
 var resultEl = $("#result");
 var formEl = $("#submit-form");
+var highscoresEl = $(".highscores");
+var highscoresCardEl = $("#highscores");
+var listEl = $("#list");
+
+var state = {
+    quiz: false,
+    highscores: false,
+    gameover: false,
+};
 
 //Global variables
 var questionIndex = 0;
@@ -35,32 +44,51 @@ var answers = [["HTML","CSS","Javascript","jQuery"],
 function init() {
 
 }
+
 //function to manage the timer
 function setTime() {
     var timer = setInterval(function() {
+        if(secondsLeft < 0) {
+            secondsLeft = 0;
+        }
+
         if(secondsLeft === 0) {
             clearInterval(timer);
             gameOver();
-        }
-        if(questionIndex===4) {
+        } else if (questionIndex===5) {
             clearInterval(timer);
+            gameOver();
+        } 
+        else {
+            secondsLeft--;
+            timerEl.text("Time: " + secondsLeft);
         }
-        secondsLeft--;
-        timerEl.text("Time: " + secondsLeft);
     }, 1000)
 }
 //function to start the quiz by calling initial functions
 function startQuiz() {
     paragraphEl.hide(); //uses jQuery to hide start section
     buttonStart.hide();
+    answersEl.show();
+    resultEl.show();
+    listEl.hide();
     setTime();//begins timer
-    renderQuiz();//dynamically renders quiz container and shows first question
+    if (state.quiz === false) {
+        renderQuiz();//dynamically renders quiz container and shows first question
+    } else {
+        questionIndex = 0;
+        secondsLeft = 75;
+        nextQuestion(answers[0]);
+    }
+    headingEl.text(questions[questionIndex]);
+    resultEl.text("");
+    
 
 }
 //function to render quiz container and dynamic button elements
 function renderQuiz() {
     containerEl.css("align-items", "flex-start");//change css style
-    headingEl.text(questions[questionIndex]);
+    
 
     //for loop used to append answer buttons
     for (var i=0; i<answers[questionIndex].length; i++) {
@@ -70,6 +98,7 @@ function renderQuiz() {
         answerBtn.text(answers[questionIndex][i]);//add text to element
         answersEl.append(answerBtn);//append element to <div id="answers"><div>
     }
+    state.quiz=true;
 }
 //refreshes questions and answers, passes in answer arrays
 function nextQuestion(currentArray) {
@@ -80,15 +109,22 @@ function nextQuestion(currentArray) {
         answerEl.text(currentArray[i]);//add text to element
     }
 }
-
+//function used to move to game over container
 function gameOver() {
     timerEl.text("Time: " + secondsLeft);
     headingEl.text("All done!");
     paragraphEl.show();
     paragraphEl.text("Your final score is: " + secondsLeft);
+    formEl.show();
     answersEl.hide();
-    resultEl.hide();
+    listEl.hide();
+    if (state.gameover === false) {
+        renderGameover();
+    }
 
+}
+//function used to render game over container
+function renderGameover() {
     //create and append form and submit button
     var myForm = $("<input>");
     var myBtn = $("<button>");
@@ -101,13 +137,55 @@ function gameOver() {
     myBtn.addClass("user-button");
     myBtn.text("Submit");
     formEl.append(myBtn);
-}
 
+    state.gameover = true;
+}
+//function to append user inputted highscore
 function handleSubmitForm(event) {
     event.preventDefault();
-    window.alert("Submitted!");
+
+    var inputEl = $(".form-input");
+    var newScoreEl = $("<li>");
+    newScoreEl.text(inputEl.val() + " - " + secondsLeft);
+    listEl.append(newScoreEl);
+
+    viewHighscores();
     
     //use local storage to save high scores
+}
+//function to view high scores
+function viewHighscores() {
+    headingEl.text("Highscores");
+    if (state.highscores === false) {
+        renderHighscores();
+    } else {
+        highscoresCardEl.show();
+    }
+    listEl.show();
+    paragraphEl.hide();
+    answersEl.hide();
+    resultEl.hide();
+    formEl.hide();
+    buttonStart.hide();
+}
+//function to render highscore container
+function renderHighscores() {
+    var scoreEl = $("<ul>");
+    listEl.append(scoreEl);
+
+    var backBtn = $("<button>");
+    backBtn.addClass("user-button");
+    backBtn.attr("id", "back");
+    backBtn.text("Go Back");
+    highscoresCardEl.append(backBtn);
+
+    var clearBtn = $("<button>");
+    clearBtn.addClass("user-button");
+    clearBtn.attr("id", "clear");
+    clearBtn.text("Clear Highscores");
+    highscoresCardEl.append(clearBtn);
+
+    state.highscores=true;
 }
 
 //Event listeners
@@ -153,11 +231,28 @@ answersEl.on("click", ".user-button", function (event) { //listens for answer bu
             secondsLeft=secondsLeft-15;
             resultEl.text("Wrong!");
         }
-        gameOver();//end the game after final question
+        questionIndex++;
     } else {//if not last question, move to next question
         questionIndex++;
         nextQuestion(answers[questionIndex]);
     }
 });
 
-formEl.on("submit", handleSubmitForm);
+formEl.on("submit", handleSubmitForm);//event listener for form submission
+
+highscoresEl.on("click", viewHighscores);//event listener for view highscores
+
+highscoresCardEl.on("click", function(event) { //event listener for buttons on view highscore container
+    if($(event.target).attr("id")=="back") {
+        highscoresCardEl.hide();
+        listEl.hide();
+        headingEl.text("Coding Quiz Challenge");
+        paragraphEl.show();
+        paragraphEl.text("Try to answer the following code-related questions within the time limit. Keep in mind that incorrect answers will penalize your time by ten seconds!");
+        buttonStart.show();
+    }
+
+    if($(event.target).attr("id")=="clear") {
+        listEl.children("li").remove();
+    } 
+});
