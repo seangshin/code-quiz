@@ -13,6 +13,7 @@ var highscoresEl = $(".highscores");
 var highscoresCardEl = $("#highscores");
 var listEl = $("#list");
 
+//Object to keep track of game progress
 var state = {
     quiz: false,
     highscores: false,
@@ -22,6 +23,7 @@ var state = {
 //Global variables
 var questionIndex = 0;
 var secondsLeft = 75;
+var allhighscores= [];
 
 //Hard coded Q&A
 var questions = [
@@ -40,26 +42,35 @@ var answers = [["HTML","CSS","Javascript","jQuery"],
 
 /*Functions*/
 
-//function to intially render page
+//function to load locally stored values
 function init() {
-
+    var scores = JSON.parse(localStorage.getItem("scores"));
+    if(scores != null) {
+        listEl.hide();
+        allhighscores = scores;//sets allhighscores array equal to locally stored score array
+        for(var i=0; i<scores.length; i++) { //for loop used to append locally stored score array
+            var scoreEl = $("<li>");
+            scoreEl.text(scores[i]);
+            listEl.append(scoreEl);
+        }
+    }
 }
-
+init();
 //function to manage the timer
 function setTime() {
     var timer = setInterval(function() {
-        if(secondsLeft < 0) {
+        if(secondsLeft < 0) {//sets timer to 0 if time is below 0
             secondsLeft = 0;
         }
 
-        if(secondsLeft === 0) {
+        if(secondsLeft === 0) {//if timer is 0, call game over function and stop timer
             clearInterval(timer);
             gameOver();
-        } else if (questionIndex===5) {
+        } else if (questionIndex===5) {//is last question answered, call game over function
             clearInterval(timer);
             gameOver();
         } 
-        else {
+        else {//if time is not 0, continue
             secondsLeft--;
             timerEl.text("Time: " + secondsLeft);
         }
@@ -67,6 +78,7 @@ function setTime() {
 }
 //function to start the quiz by calling initial functions
 function startQuiz() {
+    highscoresEl.off("click", viewHighscores);//event listener for view highscores
     paragraphEl.hide(); //uses jQuery to hide start section
     buttonStart.hide();
     answersEl.show();
@@ -75,7 +87,7 @@ function startQuiz() {
     setTime();//begins timer
     if (state.quiz === false) {
         renderQuiz();//dynamically renders quiz container and shows first question
-    } else {
+    } else {//resets questions, answers, and timer
         questionIndex = 0;
         secondsLeft = 75;
         nextQuestion(answers[0]);
@@ -87,9 +99,6 @@ function startQuiz() {
 }
 //function to render quiz container and dynamic button elements
 function renderQuiz() {
-    containerEl.css("align-items", "flex-start");//change css style
-    
-
     //for loop used to append answer buttons
     for (var i=0; i<answers[questionIndex].length; i++) {
         var answerBtn = $("<button>"); //create button element
@@ -148,10 +157,10 @@ function handleSubmitForm(event) {
     var newScoreEl = $("<li>");
     newScoreEl.text(inputEl.val() + " - " + secondsLeft);
     listEl.append(newScoreEl);
-
-    viewHighscores();
+    allhighscores.push(inputEl.val() + " - " + secondsLeft);//saves highscore to global array
+    localStorage.setItem("scores", JSON.stringify(allhighscores));//saves highscores to local storage
     
-    //use local storage to save high scores
+    viewHighscores();
 }
 //function to view high scores
 function viewHighscores() {
@@ -250,9 +259,14 @@ highscoresCardEl.on("click", function(event) { //event listener for buttons on v
         paragraphEl.show();
         paragraphEl.text("Try to answer the following code-related questions within the time limit. Keep in mind that incorrect answers will penalize your time by ten seconds!");
         buttonStart.show();
+        highscoresEl.on("click", viewHighscores);//event listener for view highscores
     }
 
     if($(event.target).attr("id")=="clear") {
         listEl.children("li").remove();
+        for(var i=allhighscores.length; i>=0; i--) {
+            allhighscores.pop();
+        }
+        localStorage.setItem("scores", JSON.stringify(allhighscores));
     } 
 });
