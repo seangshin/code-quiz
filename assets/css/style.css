@@ -31,16 +31,13 @@ main {
     min-height: 80vh;
 }
 
-p {
-    width: 40vw;
-}
-
 /*Class Selectors*/
 .container {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    width: 40vw;
 }
 
 .high-scores {
